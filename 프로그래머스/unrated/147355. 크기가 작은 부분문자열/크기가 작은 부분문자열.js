@@ -3,7 +3,7 @@ function solution(t, p) {
     let result = 0;
     
     for(let i = 0; i <= t.length - num; i++) { // 0부터 문자길이 만큼 반복
-        if(parseInt(t.substr(i, num)) <= parseInt(p)) {
+        if(t.substr(i, num) <= p) {
             result++
         }
     }
