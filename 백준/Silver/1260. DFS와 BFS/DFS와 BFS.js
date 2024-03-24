@@ -1,44 +1,45 @@
 const fs = require("fs");
 
 const input = fs.readFileSync("/dev/stdin").toString().trim().split("\n");
-const [N, M, V] = input[0].split(" ").map(Number);
 
+// N: 정점 개수, M: 간선 개수, V: 시작 정점 번호
+const [N, M, V] = input[0].split(" ").map(Number);
 const graph = Array.from(Array(N + 1), () => new Array(N + 1).fill(0));
 
 for (let i = 1; i <= M; i++) {
-  let [row, column] = input[i].split(" ").map(Number);
-  graph[row][column] = 1;
-  graph[column][row] = 1;
+  let [start, end] = input[i].split(" ").map(Number);
+  graph[start][end] = graph[end][start] = 1; // 양방향
 }
 
-const DFS_visited = new Array(N + 1).fill(false);
-const DFS_answer = [];
-const BFS_visited = new Array(N + 1).fill(false);
-const BFS_answer = [];
+// 방문 여부, 탐색 결과
+const visitedDFS = new Array(N + 1).fill(false);
+const resultDFS = [];
+const visitedBFS = new Array(N + 1).fill(false);
+const resultBFS = [];
 
-function DFS(V) {
-  DFS_visited[V] = true;
-  DFS_answer.push(V);
+function DFS(vertex) {
+  visitedDFS[vertex] = true; // 방문 표시하기
+  resultDFS.push(vertex);
+
   for (let i = 1; i < graph.length; i++) {
-    if (graph[V][i] === 1 && DFS_visited[i] === false) {
-      DFS(i);
+    if (graph[vertex][i] && !visitedDFS[i]) {
+      DFS(i); // 재귀
     }
   }
 }
 
-function BFS(V) {
-  const queue = [];
-  BFS_visited[V] = true;
-  BFS_answer.push(V);
-  queue.push(V);
+function BFS(startVertex) {
+  const queue = [startVertex];
+  visitedBFS[startVertex] = true; // 시작 정정 방문
 
-  while (queue.length !== 0) {
-    let dequeue = queue.shift();
-    for (let i = 1; i < graph.length; i++) {
-      if (graph[dequeue][i] === 1 && BFS_visited[i] === false) {
-        BFS_visited[i] = true;
+  while (queue.length) {
+    const vertex = queue.shift(); // 큐에서 정점 추출
+    resultBFS.push(vertex);
+
+    for (let i = 1; i <= N; i++) {
+      if (graph[vertex][i] && !visitedBFS[i]) {
+        visitedBFS[i] = true;
         queue.push(i);
-        BFS_answer.push(i);
       }
     }
   }
@@ -47,5 +48,5 @@ function BFS(V) {
 DFS(V);
 BFS(V);
 
-console.log(DFS_answer.join(" "));
-console.log(BFS_answer.join(" "));
+console.log(resultDFS.join(" "));
+console.log(resultBFS.join(" "));
